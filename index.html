@@ -5,65 +5,98 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Полив</title>
 <style>
-body{margin:0;font-family:system-ui,sans-serif;background:#111;color:#eee}
-h1{font-size:20px;padding:16px;margin:0}
-.c{background:#1c1c1c;margin:8px 12px;padding:12px;border-radius:12px;border-left:5px solid #555}
-.due{border-left-color:#e5484d}.soon{border-left-color:#f5a623}.ok{border-left-color:#30a46c}
-.n{font-weight:600}.m{font-size:13px;color:#aaa;margin:4px 0}
-.r{display:flex;justify-content:space-between;align-items:center;gap:8px}
-button{background:#2b6cb0;color:#fff;border:0;border-radius:8px;padding:10px 14px;font-size:15px}
-.u{background:#333}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,sans-serif;background:#0e0f0e;color:#e8ece8;padding-bottom:30px}
+header{padding:18px 14px 8px}
+h1{font-size:22px;margin:0 0 4px}
+.sum{font-size:14px;color:#9aa59a}
+.sum b{color:#ff6b6b}
+.cat{margin:14px 10px;background:#161916;border-radius:14px;overflow:hidden;border:1px solid #232823}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #232823}
+.ct{font-weight:700;font-size:16px}
+.cs{font-size:12px;color:#9aa59a;margin-top:2px}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+.b-due{background:#4a1d1f;color:#ff8a8a}.b-ok{background:#1d3a26;color:#7ee29a}
+.p{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 12px;border-left:4px solid transparent;border-bottom:1px solid #1e221e}
+.p:last-child{border-bottom:0}
+.due{border-left-color:#e5484d;background:#1f1415}.soon{border-left-color:#f5a623}.ok{border-left-color:#30a46c}
+.n{font-weight:600;font-size:15px}
+.m{font-size:12.5px;color:#9aa59a;margin-top:3px}
+.ml{color:#8ec5ff;font-weight:600}
+.st{font-size:12.5px;margin-top:3px}
+.due .st{color:#ff8a8a}.soon .st{color:#f5c26b}.ok .st{color:#7ee29a}
+.btns{display:flex;gap:6px;flex-shrink:0}
+button{background:#2b6cb0;color:#fff;border:0;border-radius:9px;padding:10px 13px;font-size:14px}
+button:active{opacity:.7}
+.u{background:#2a2f2a;padding:10px 11px}
+.all{background:#2f6f45;padding:8px 11px;font-size:13px}
 </style>
 </head>
 <body>
-<h1>Полив рослин</h1>
+<header><h1>Полив рослин</h1><div class="sum" id="sum"></div></header>
 <div id="list"></div>
 <script>
-const P=[
-["Молочай тригранний",28,"80-100 мл","по колу біля стовбура"],
-["Сансев'єрія циліндрична",28,"40-50 мл","по краю, не в центр розеток"],
-["Красула «Хоббіт»",28,"50-60 мл",""],
-["Витягнутий седум",28,"30-40 мл",""],
-["Ехеверії в контейнері",20,"70-90 мл","тонкою цівкою між розетками"],
-["Пухнаста ехеверія",20,"50-60 мл","під корінь по краю, не мочити листя"],
-["Дрібний голчастий седум",20,"20-30 мл",""],
-["Лісовий кактус",20,"30-40 мл",""],
-["Аіхризон",16,"100-120 мл",""],
-["Каланхое (усі)",16,"60-80 мл","на горщик"],
-["Аспарагус Шпренгера",16,"100-120 мл",""],
-["Фікус Бенджаміна",10,"150-180 мл","через 15 хв злити з піддона"],
-["Сингоніуми",10,"80-120 мл","залежно від горщика"],
-["Епіпремнум",10,"100-120 мл",""],
-["Варієгатний плющ (кущ)",10,"80-100 мл",""],
-["Витка ліана (білий ящик)",10,"200-250 мл","рівномірно по ящику"],
-["Кімнатний кипарисовик",5,"120-150 мл","не пересушувати"],
-["Живці традесканції",5,"30-40 мл","ґрунт ледь вологий"],
-["Паростки плюща",5,"20-30 мл","під корінці"]
+const C=[
+{t:"Хвойні та молоді живці",d:7,s:"Щонеділі · не пересушувати, малими порціями",p:[
+["Кімнатний кипарисовик","120-150 мл","не пересушувати"],
+["Живці традесканції","30-40 мл","ґрунт ледь вологий"],
+["Паростки плюща","20-30 мл","під корінці"]]},
+{t:"Тропічні та декоративно-листяні",d:14,s:"Кожну другу неділю",p:[
+["Фікус Бенджаміна","150-180 мл","через 15 хв злити з піддона"],
+["Сингоніуми","80-120 мл","залежно від горщика"],
+["Епіпремнум","100-120 мл",""],
+["Варієгатний плющ (кущ)","80-100 мл",""],
+["Витка ліана (білий ящик)","200-250 мл","рівномірно по ящику"]]},
+{t:"Напівсукуленти та каланхое",d:21,s:"Кожну третю неділю",p:[
+["Аіхризон","100-120 мл",""],
+["Каланхое (усі)","60-80 мл","на горщик"],
+["Аспарагус Шпренгера","100-120 мл",""]]},
+{t:"Дрібні та пухнасті сукуленти",d:21,s:"Кожну третю неділю · не переливати",p:[
+["Ехеверії в контейнері","70-90 мл","тонкою цівкою між розетками"],
+["Пухнаста ехеверія","50-60 мл","по краю, не мочити листя"],
+["Дрібний голчастий седум","20-30 мл",""],
+["Лісовий кактус","30-40 мл",""]]},
+{t:"Сплячі сукуленти",d:28,s:"Раз на 4 неділі · зимова сплячка",p:[
+["Молочай тригранний","80-100 мл","по колу біля стовбура"],
+["Сансев'єрія циліндрична","40-50 мл","по краю, не в центр розеток"],
+["Красула «Хоббіт»","50-60 мл",""],
+["Витягнутий седум","30-40 мл",""]]}
 ];
 const K="plants_v1",D=864e5;
 let s={};try{s=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}};
 const day=t=>Math.floor(t/D);
+const fmt=x=>new Date(x*D).toLocaleDateString("uk-UA",{day:"numeric",month:"long"});
+const esc=n=>n.replace(/'/g,"\\'");
 function render(){
-  const now=day(Date.now());
-  const items=P.map(([n,d,ml,note])=>{
-    const last=s[n];const left=last==null?0:d-(now-last);
-    return{n,d,ml,note,last,left};
-  }).sort((a,b)=>a.left-b.left);
-  document.getElementById("list").innerHTML=items.map(p=>{
-    const cls=p.left<=0?"due":p.left<=2?"soon":"ok";
-    const st=p.last==null?"ще не поливалось":p.left<=0?`пора (прострочено ${-p.left} дн)`:`через ${p.left} дн`;
-    return `<div class="c ${cls}"><div class="r"><div>
-      <div class="n">${p.n}</div>
-      <div class="m">${p.ml} · кожні ${p.d} дн${p.note?" · "+p.note:""}</div>
-      <div class="m">${st}</div></div>
-      <div><button onclick="w('${p.n.replace(/'/g,"\\'")}')">Полив</button>
-      ${p.last!=null?`<button class="u" onclick="u('${p.n.replace(/'/g,"\\'")}')">↺</button>`:""}</div>
-    </div></div>`;
+  const now=day(Date.now());let total=0;
+  const html=C.map((c,ci)=>{
+    const items=c.p.map(([n,ml,note])=>{
+      const last=s[n];const left=last==null?0:c.d-(now-last);
+      return{n,ml,note,last,left};
+    }).sort((a,b)=>a.left-b.left);
+    const due=items.filter(p=>p.left<=0).length;total+=due;
+    const rows=items.map(p=>{
+      const cls=p.left<=0?"due":p.left<=2?"soon":"ok";
+      const st=p.last==null?"ще не поливалось":`полито ${fmt(p.last)} · `+(p.left<=0?`пора${p.left<0?` (прострочено ${-p.left} дн)`:""}`:`наступний через ${p.left} дн`);
+      return `<div class="p ${cls}"><div>
+        <div class="n">${p.n}</div>
+        <div class="m"><span class="ml">${p.ml}</span>${p.note?" · "+p.note:""}</div>
+        <div class="st">${st}</div></div>
+        <div class="btns">${p.last!=null?`<button class="u" onclick="u('${esc(p.n)}')">↺</button>`:""}
+        <button onclick="w('${esc(p.n)}')">Полив</button></div></div>`;
+    }).join("");
+    return `<div class="cat"><div class="ch"><div>
+      <div class="ct">${c.t}<span class="badge ${due?"b-due":"b-ok"}">${due?due+" до поливу":"все ок"}</span></div>
+      <div class="cs">${c.s}</div></div>
+      ${due?`<button class="all" onclick="wa(${ci})">Полити всі</button>`:""}</div>${rows}</div>`;
   }).join("");
+  document.getElementById("list").innerHTML=html;
+  document.getElementById("sum").innerHTML=total?`Сьогодні до поливу: <b>${total}</b>`:"Сьогодні поливати нічого";
 }
 function w(n){s[n]=day(Date.now());save();render()}
 function u(n){delete s[n];save();render()}
+function wa(ci){const now=day(Date.now());C[ci].p.forEach(([n])=>{const l=s[n];if(l==null||C[ci].d-(now-l)<=0)s[n]=now});save();render()}
 render();
 </script>
 </body>
