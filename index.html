@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Полив</title>
+<style>
+body{margin:0;font-family:system-ui,sans-serif;background:#111;color:#eee}
+h1{font-size:20px;padding:16px;margin:0}
+.c{background:#1c1c1c;margin:8px 12px;padding:12px;border-radius:12px;border-left:5px solid #555}
+.due{border-left-color:#e5484d}.soon{border-left-color:#f5a623}.ok{border-left-color:#30a46c}
+.n{font-weight:600}.m{font-size:13px;color:#aaa;margin:4px 0}
+.r{display:flex;justify-content:space-between;align-items:center;gap:8px}
+button{background:#2b6cb0;color:#fff;border:0;border-radius:8px;padding:10px 14px;font-size:15px}
+.u{background:#333}
+</style>
+</head>
+<body>
+<h1>Полив рослин</h1>
+<div id="list"></div>
+<script>
+const P=[
+["Молочай тригранний",28,"80-100 мл","по колу біля стовбура"],
+["Сансев'єрія циліндрична",28,"40-50 мл","по краю, не в центр розеток"],
+["Красула «Хоббіт»",28,"50-60 мл",""],
+["Витягнутий седум",28,"30-40 мл",""],
+["Ехеверії в контейнері",20,"70-90 мл","тонкою цівкою між розетками"],
+["Пухнаста ехеверія",20,"50-60 мл","під корінь по краю, не мочити листя"],
+["Дрібний голчастий седум",20,"20-30 мл",""],
+["Лісовий кактус",20,"30-40 мл",""],
+["Аіхризон",16,"100-120 мл",""],
+["Каланхое (усі)",16,"60-80 мл","на горщик"],
+["Аспарагус Шпренгера",16,"100-120 мл",""],
+["Фікус Бенджаміна",10,"150-180 мл","через 15 хв злити з піддона"],
+["Сингоніуми",10,"80-120 мл","залежно від горщика"],
+["Епіпремнум",10,"100-120 мл",""],
+["Варієгатний плющ (кущ)",10,"80-100 мл",""],
+["Витка ліана (білий ящик)",10,"200-250 мл","рівномірно по ящику"],
+["Кімнатний кипарисовик",5,"120-150 мл","не пересушувати"],
+["Живці традесканції",5,"30-40 мл","ґрунт ледь вологий"],
+["Паростки плюща",5,"20-30 мл","під корінці"]
+];
+const K="plants_v1",D=864e5;
+let s={};try{s=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}};
+const day=t=>Math.floor(t/D);
+function render(){
+  const now=day(Date.now());
+  const items=P.map(([n,d,ml,note])=>{
+    const last=s[n];const left=last==null?0:d-(now-last);
+    return{n,d,ml,note,last,left};
+  }).sort((a,b)=>a.left-b.left);
+  document.getElementById("list").innerHTML=items.map(p=>{
+    const cls=p.left<=0?"due":p.left<=2?"soon":"ok";
+    const st=p.last==null?"ще не поливалось":p.left<=0?`пора (прострочено ${-p.left} дн)`:`через ${p.left} дн`;
+    return `<div class="c ${cls}"><div class="r"><div>
+      <div class="n">${p.n}</div>
+      <div class="m">${p.ml} · кожні ${p.d} дн${p.note?" · "+p.note:""}</div>
+      <div class="m">${st}</div></div>
+      <div><button onclick="w('${p.n.replace(/'/g,"\\'")}')">Полив</button>
+      ${p.last!=null?`<button class="u" onclick="u('${p.n.replace(/'/g,"\\'")}')">↺</button>`:""}</div>
+    </div></div>`;
+  }).join("");
+}
+function w(n){s[n]=day(Date.now());save();render()}
+function u(n){delete s[n];save();render()}
+render();
+</script>
+</body>
+</html>
